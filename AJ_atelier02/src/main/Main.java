@@ -1,3 +1,5 @@
+package main;
+
 import domaine.*;
 import domaine.Plat.Cout;
 import domaine.Plat.Difficulte;
@@ -9,19 +11,19 @@ public class Main {
 	public static void main(String[] args) {
 
 		Plat plat = null;
-		plat = new Plat("Waterzooi", 4, Difficulte.XX, Cout.$$$);
+		plat = new Plat("Waterzooi", 4, Difficulte.XX, Cout.$$$, Plat.Type.PLAT);
 
 		Instruction instruction = new Instruction("Couper les légumes", 15);
 		try {
 			plat.insererInstruction(0,instruction);
-		} catch(IllegalArgumentException iae){}
+		} catch(IllegalArgumentException ignored){}
 		plat.ajouterInstruction(instruction);
 		instruction = new Instruction("Faire revenir les légumes", 5);
 		plat.ajouterInstruction(instruction);
 		instruction = new Instruction("Laisser mijoter jusqu'à cuisson du poulet",50);
 		try {
 			plat.insererInstruction(4,instruction);
-		} catch(IllegalArgumentException iae){}
+		} catch(IllegalArgumentException ignored){}
 		plat.ajouterInstruction(instruction);
 		instruction = new Instruction("Laisser légèrement refroidir", 3);
 		plat.ajouterInstruction(instruction);
@@ -39,7 +41,7 @@ public class Main {
 		}
 		try{
 			instructionIterator.remove();
-		} catch (UnsupportedOperationException uoe){}
+		} catch (UnsupportedOperationException ignored){}
 
 		Ingredient ing = new Ingredient("Blanc de poulet");
 		plat.ajouterIngredient(ing,400, Unite.GRAMME);
@@ -58,6 +60,13 @@ public class Main {
 		IngredientQuantifie ingQuantifie = plat.trouverIngredientQuantifie(new Ingredient("Blanc de poulet"));
 		System.out.println("Quantité de blanc de poulet nécessaire : " + ingQuantifie.getQuantite() + " " + ingQuantifie.getUnite()+"\n");
 		System.out.println(plat);
+
+		Livre livre = new Livre();
+		livre.ajouterPlat(plat);
+		livre.ajouterPlat(new Plat("Croquettes au fromage", 4, Difficulte.XXX, Cout.$$, Plat.Type.ENTREE));
+		System.out.println(livre);
+		livre.supprimerPlat(new Plat("Toasts aux champignons", 5, Difficulte.XXX, Cout.$$$, Plat.Type.ENTREE));
+		System.out.println(livre);
 	}
 
 }

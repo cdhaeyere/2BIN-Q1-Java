@@ -1,6 +1,5 @@
 package domaine;
 
-import domaine.Instruction;
 import util.Util;
 
 import java.time.Duration;
@@ -8,15 +7,46 @@ import java.util.*;
 
 public class Plat {
 
-    private String                   nom;
-    private int                      nbPersonnes;
-    private Difficulte               niveauDeDifficulte;
-    private Cout                     cout;
-    private Duration                 dureeEnMinutes;
-    private List<Instruction>        recette;
-    private Set<IngredientQuantifie> ingredients;
+    public enum Difficulte{
+        X,XX,XXX,XXXX,XXXXX;
+        @Override
+        public String toString() {
+            return super.toString().replace("X","*");
+        }
+    }
 
-    public Plat(String nom, int nbPersonnes, Difficulte niveauDeDifficulte, Cout cout) {
+    public enum Cout{
+        $,$$,$$$,$$$$,$$$$$;
+        @Override
+        public String toString() {
+            return super.toString().replace("$","€");
+        }
+    }
+
+    public enum Type {
+        ENTREE("Entrée"),PLAT("Plat"),DESSERT("Dessert");
+
+        private String nom;
+
+        Type(String nom) {
+            this.nom = nom;
+        }
+
+        public String getNom() {
+            return nom;
+        }
+    }
+
+    private final String nom;
+    private int nbPersonnes;
+    private Difficulte niveauDeDifficulte;
+    private Cout cout;
+    private Duration dureeEnMinutes = Duration.ofMinutes(0);
+    private List<Instruction> recette = new ArrayList<Instruction>();
+    private Set<IngredientQuantifie> ingredients = new HashSet<IngredientQuantifie>();
+    private Type type;
+
+    public Plat(String nom, int nbPersonnes, Difficulte niveauDeDifficulte, Cout cout, Type type) {
         Util.checkString(nom);
         Util.checkStrictlyPositive(nbPersonnes);
         Util.checkObject(niveauDeDifficulte);
@@ -25,107 +55,185 @@ public class Plat {
         this.nbPersonnes = nbPersonnes;
         this.niveauDeDifficulte = niveauDeDifficulte;
         this.cout = cout;
-        this.dureeEnMinutes = Duration.ZERO;
-        recette = new ArrayList<>();
-        ingredients = new HashSet<>();
+        this.type = type;
     }
 
-    public void insererInstruction(int position, Instruction instruction) {
+    public String getNom() {
+        return nom;
+    }
+
+    public int getNbPersonnes() {
+        return nbPersonnes;
+    }
+
+    public Difficulte getNiveauDeDifficulte() {
+        return niveauDeDifficulte;
+    }
+
+    public Cout getCout() {
+        return cout;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Duration getDureeEnMinutes() {
+        return dureeEnMinutes;
+    }
+
+    // gestion de la recette et de la dureeEnMinutes
+
+    /** Cette méthode insère l'instruction à la position précisée (la position commence à 1)
+     * @param position la position à laquelle l'instruction doit être insérée
+     * @param instruction l'instruction à insérer
+     * @throws IllegalArgumentException en cas de position invalide ou d'instruction null
+     */
+    public void insererInstruction(int position, Instruction instruction){
+        Util.checkStrictlyPositive(position);
         Util.checkObject(instruction);
-        if (position <= 0 || position > recette.size() + 1) {
-            throw new IllegalArgumentException("La position doit être comprise entre 1 et " + recette.size());
-        }
-        recette.add(position-1, instruction);
+        if (position > recette.size() + 1) throw new IllegalArgumentException();
+        recette.add(position-1,instruction);
         dureeEnMinutes = dureeEnMinutes.plus(instruction.getDureeEnMinutes());
     }
 
-    public void ajouterInstruction(Instruction instruction) {
+    /** Cette méthode ajoute l'instruction en fin de la liste
+     * @param instruction l'instruction à ajouter
+     * @throws IllegalArgumentException en cas d'instruction null
+     */
+    public void ajouterInstruction (Instruction instruction){
         Util.checkObject(instruction);
         recette.add(instruction);
         dureeEnMinutes = dureeEnMinutes.plus(instruction.getDureeEnMinutes());
     }
 
-    public Instruction remplacerInstruction(int position, Instruction instruction) {
+    /**
+     * Cette méthode remplace l’instruction de la position précisée par celle en paramètre (la position commence à 1).
+     * @param position la position de l'instruction à remplacer
+     * @param instruction la nouvelle instruction
+     * @return l'instruction remplacée
+     * @throws IllegalArgumentException en cas de position invalide ou d'instruction null
+     */
+    public Instruction remplacerInstruction (int position, Instruction instruction){
+        Util.checkStrictlyPositive(position);
         Util.checkObject(instruction);
-        if (position <= 0 || position > recette.size()) {
-            throw new IllegalArgumentException("La position doit être comprise entre 1 et " + recette.size());
-        }
-        Instruction ancienneInstruction = recette.get(position-1);
-        dureeEnMinutes = dureeEnMinutes.minus(ancienneInstruction.getDureeEnMinutes());
-        recette.set(position-1, instruction);
+        if (position > recette.size()) throw new IllegalArgumentException();
+        Instruction instructionRemplacee = recette.set(position-1,instruction);
+        dureeEnMinutes = dureeEnMinutes.minus(instructionRemplacee.getDureeEnMinutes());
         dureeEnMinutes = dureeEnMinutes.plus(instruction.getDureeEnMinutes());
-        return ancienneInstruction;
+        return instructionRemplacee;
     }
 
-    public Instruction supprimerInstruction(int position) {
-        if (position <= 0 || position > recette.size()) {
-            throw new IllegalArgumentException("La position doit être comprise entre 0 et " + recette.size());
-        }
-        Instruction instruction = recette.remove(position-1);
-        dureeEnMinutes = dureeEnMinutes.minus(instruction.getDureeEnMinutes());
-        return instruction;
+    /**
+     * Cette méthode supprime l’instruction qui se trouve à la position précisée en paramètre (la position commence à 1).
+     * @param position la position de l'instruction à supprimer
+     * @return l'instuction supprimée
+     * @throws IllegalArgumentException en cas de position invalide
+     */
+    public Instruction supprimerInstruction (int position){
+        Util.checkStrictlyPositive(position);
+        if (position > recette.size() ) throw new IllegalArgumentException();
+        Instruction instructionSupprimee = recette.remove(position-1);
+        dureeEnMinutes = dureeEnMinutes.minus(instructionSupprimee.getDureeEnMinutes());
+        return instructionSupprimee;
     }
 
-    public Iterator<Instruction> instructions() {
+    public Iterator<Instruction> instructions(){
         return Collections.unmodifiableList(recette).iterator();
     }
 
-    public void ajouterIngredient(Ingredient ingredient, int quantite, Unite unite) {
-        Util.checkObject(ingredient);
-        Util.checkStrictlyPositive(quantite);
-        Util.checkObject(unite);
-        ingredients.add(new IngredientQuantifie(ingredient, quantite, unite));
-    }
 
-    public void ajouterIngredient(Ingredient ingredient, int quantite) {
-        ajouterIngredient(ingredient, quantite, Unite.NEANT);
-    }
+    //gestion des ingrédients
 
-    public void modifierIngredient(Ingredient ingredient, int quantite, Unite unite) {
-        Util.checkObject(ingredient);
-        Util.checkStrictlyPositive(quantite);
-        Util.checkObject(unite);
-        for (IngredientQuantifie ingredientQuantifie : ingredients) {
-            if (ingredientQuantifie.getIngredient().equals(ingredient)) {
-                ingredientQuantifie.setQuantite(quantite);
-                ingredientQuantifie.setUnite(unite);
-            }
-        }
-    }
-
-    public void supprimerIngredient(Ingredient ingredient) {
-        Util.checkObject(ingredient);
-        ingredients.removeIf(ingredientQuantifie -> ingredientQuantifie.getIngredient().equals(ingredient));
-    }
-
-    public IngredientQuantifie trouverIngredientQuantifie(Ingredient ingredient) {
+    /**
+     * Cette méthode recherche et renvoie l'ingredient quantifié correspondant à l'ingrédient passé en paramètre
+     * @param ingredient l'ingrédient recherché
+     * @return l'ingrédient quantifié correspondant s'il existe, null sinon
+     * @throws IllegalArgumentException en cas de paramètre null
+     */
+    private IngredientQuantifie getIngredientQuantifie(Ingredient ingredient) {
         Util.checkObject(ingredient);
         for (IngredientQuantifie ingredientQuantifie : ingredients) {
-            if (ingredientQuantifie.getIngredient().equals(ingredient)) {
+            if (ingredientQuantifie.getIngredient().equals(ingredient))
                 return ingredientQuantifie;
-            }
         }
         return null;
     }
 
-    public SortedSet<Ingredient> ingredients() {
-        SortedSet<Ingredient> ingredientsTries = new TreeSet<>(new IngredientComparator());
-        for (IngredientQuantifie ingredientQuantifie : ingredients) {
-            ingredientsTries.add(ingredientQuantifie.getIngredient());
-        }
-        return ingredientsTries;
+    /**
+     * Dans le cas où l'ingrédient n'est pas encore présent, cette méthode crée et ajoute un ingrédient quantifié avec comme quantité et comme unité
+     * les valeurs passées en paramètre.
+     * @param ingredient
+     * @param quantite la quantité désirée
+     * @param unite l'unité de mesure
+     * @return true si un ingrédient quantifié a été ajouté, false sinon.
+     * @throws IllegalArgumentException en cas de paramètres invalides
+     */
+    public boolean ajouterIngredient(Ingredient ingredient, int quantite, Unite unite){
+        Util.checkObject(unite);
+        Util.checkStrictlyPositive(quantite);
+        if (getIngredientQuantifie(ingredient) != null) return false;
+        ingredients.add(new IngredientQuantifie(ingredient,quantite,unite));
+        return true;
     }
 
-    private class IngredientComparator implements Comparator<Ingredient> {
-        @Override
-        public int compare(Ingredient ingredient1, Ingredient ingredient2) {
-            return ingredient1.getNom().compareTo(ingredient2.getNom());
-        }
+    /**
+     * Dans le cas où l'ingrédient n'est pas encore présent, cette méthode crée et ajoute un ingrédient quantifié avec la quantité passée en paramètre
+     * et l'unité NEANT.
+     * @param ingredient
+     * @param quantite la quantité désirée
+     * @return true si un ingrédient quantifié a été ajouté, false sinon.
+     * @throws IllegalArgumentException en cas de paramètres invalides
+     */
+    public boolean  ajouterIngredient(Ingredient ingredient, int quantite){
+        return ajouterIngredient(ingredient,quantite,Unite.NEANT);
+    }
+
+    /**
+     * Cette méthode modifie la quantité et l'unité de l'ingrédient passé en paramètre si celui-ci est déjà présent
+     * @param ingredient l'ingrédient dont il faut modifier la quantité et l'unité
+     * @param quantite la nouvelle quantité
+     * @param unite la nouvelle unité
+     * @return true si l'ingrédient est présent, false sinon
+     * @throws IllegalArgumentException en cas de paramètres invalides
+     */
+    public boolean modifierIngredient(Ingredient ingredient, int quantite, Unite unite){
+        Util.checkObject(unite);
+        Util.checkStrictlyPositive(quantite);
+        IngredientQuantifie ingredientQuantifie = getIngredientQuantifie(ingredient);
+        if (ingredientQuantifie == null) return false;
+        ingredientQuantifie.setQuantite(quantite);
+        ingredientQuantifie.setUnite(unite);
+        return true;
+    }
+
+    /**
+     * Cette méthode supprime, s'il existe, l'ingrédient quantifié correspondant à l'ingrédient passé en paramètre.
+     * @param ingredient l'ingrédient à supprimer
+     * @return true si une suppression a été effectuée, false sinon
+     * @throws IllegalArgumentException en cas de paramètre invalide
+     */
+    public boolean supprimerIngredient(Ingredient ingredient){
+        IngredientQuantifie ingredientQuantifie = getIngredientQuantifie(ingredient);
+        if (ingredientQuantifie == null) return false;
+        return ingredients.remove(ingredientQuantifie);
+    }
+
+    /**
+     * Cette méthode recherche et renvoie une copie de l'ingredient quantifié correspondant à l'ingrédient passé en paramètre
+     * @param ingredient l'ingrédient recherché
+     * @return une copie de l'ingrédient quantifié correspondant s'il existe, null sinon
+     * @throws IllegalArgumentException en cas de paramètre null
+     */
+    public IngredientQuantifie trouverIngredientQuantifie(Ingredient ingredient){
+        IngredientQuantifie ingredientQuantifie = getIngredientQuantifie(ingredient);
+        if (ingredientQuantifie == null) return null;
+        return ingredientQuantifie;
     }
 
     @Override
     public String toString() {
-        String hms = String.format("%d h %02d m", dureeEnMinutes.toHours(), dureeEnMinutes.toMinutes()%60);
+        String hms = String.format("%d h %02d m", dureeEnMinutes.toHours(), dureeEnMinutes.toMinutesPart());
         String res = this.nom + "\n\n";
         res += "Pour " + this.nbPersonnes + " personnes\n";
         res += "Difficulté : " + this.niveauDeDifficulte + "\n";
@@ -141,32 +249,5 @@ public class Plat {
             res += i++ + ". " + instruction + "\n";
         }
         return res;
-    }
-
-
-    public enum Difficulte {
-        X,
-        XX,
-        XXX,
-        XXXX,
-        XXXXX;
-
-        @Override
-        public String toString() {
-            return name().replace("X", "*");
-        }
-    }
-
-    public enum Cout {
-        $,
-        $$,
-        $$$,
-        $$$$,
-        $$$$$;
-
-        @Override
-        public String toString() {
-            return name().replace("$", "€");
-        }
     }
 }

@@ -5,33 +5,39 @@ import util.Util;
 import java.time.Duration;
 
 public class Instruction {
-
-    private String   description;
+    private String description;
     private Duration dureeEnMinutes;
 
-    public Instruction(String description, int dureeEnMinutes) {
+    public Instruction(String description,int duree){
         Util.checkString(description);
-        Util.checkPositiveOrNul(dureeEnMinutes);
+        Util.checkPositiveOrNul(duree);
         this.description = description;
-        this.dureeEnMinutes = Duration.ofMinutes(dureeEnMinutes);
+        this.dureeEnMinutes = Duration.ofMinutes(duree);
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        Util.checkString(description);
+        this.description = description;
+    }
+
     public Duration getDureeEnMinutes() {
         return dureeEnMinutes;
     }
 
-    public void setDureeEnMinutes(int dureeEnMinutes) {
-        Util.checkStrictlyPositive(dureeEnMinutes);
-        this.dureeEnMinutes = Duration.ofMinutes(dureeEnMinutes);
+    public void setDureeEnMinutes(Duration dureeEnMinutes) {
+        Util.checkObject(dureeEnMinutes);
+        this.dureeEnMinutes = dureeEnMinutes;
     }
 
     @Override
     public String toString() {
-        String hms = String.format("%d:%02d", dureeEnMinutes.toHours(), dureeEnMinutes.toMinutes()%60);
-        return "(" + hms + ") " + description;
+        long nbHeure = dureeEnMinutes.toHours();
+        int nbMinutes = dureeEnMinutes.toMinutesPart();
+        return "(" + String.format("%02d:%02d",nbHeure,nbMinutes) + ") " + description ;
     }
+
 }
