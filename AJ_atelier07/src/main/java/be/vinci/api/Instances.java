@@ -25,7 +25,7 @@ public class Instances {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public JsonStructure getInstanceGraphInfo(@QueryParam("builderclassname") String builderClassname) throws InvocationTargetException, IllegalAccessException, InstantiationException {
+    public JsonStructure getInstanceGraphInfo(@QueryParam("builderclassname") String builderClassname) {
         Class<?> builder;
         try {
             builder = Class.forName("be.vinci.instances." + builderClassname);
