@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>be.vinci</groupId>
-    <artifactId>introspect-api</artifactId>
+    <artifactId>AJ_atelier07</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>introspect-api</name>
+    <name>AJ_atelier07</name>
 
     <dependencyManagement>
         <dependencies>
