@@ -1,0 +1,9 @@
+domaine\Moniteur.class
+domaine\SportImpl.class
+domaine\Stage.class
+domaine\StageImpl.class
+domaine\Enfant.class
+util\Util.class
+domaine\EnfantImpl.class
+domaine\MoniteurImpl.class
+domaine\Sport.class

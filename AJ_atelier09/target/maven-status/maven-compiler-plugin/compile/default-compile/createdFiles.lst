@@ -1,0 +1,8 @@
+be\vinci\aj\domaine\QueryImpl.class
+be\vinci\aj\domaine\QueryFactoryImpl.class
+be\vinci\aj\domaine\QueryFactory.class
+be\vinci\aj\domaine\Query.class
+be\vinci\aj\main\Main.class
+be\vinci\aj\server\ProxyServer.class
+be\vinci\aj\server\QueryHandler.class
+be\vinci\aj\domaine\Query$QueryMethod.class
