@@ -1,0 +1,5 @@
+package domaine;
+
+class CaisseTest {
+
+}
