@@ -1,7 +1,5 @@
 package abonnements;
 
-import jdk.nashorn.internal.runtime.regexp.joni.exception.InternalException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +30,7 @@ public class Compte {
         try {
             Thread.sleep(30);
         } catch (InterruptedException e) {
-            throw new InternalException("Who killed me???");
+            e.printStackTrace();
         }
 
         return solde;

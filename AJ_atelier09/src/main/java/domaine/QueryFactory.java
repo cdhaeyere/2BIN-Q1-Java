@@ -1,4 +1,4 @@
-package be.vinci.aj.domaine;
+package domaine;
 
 public interface QueryFactory {
     default Query getQuery() {

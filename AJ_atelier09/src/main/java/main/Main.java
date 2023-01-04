@@ -1,8 +1,8 @@
-package be.vinci.aj.main;
+package main;
 
-import be.vinci.aj.domaine.QueryFactory;
-import be.vinci.aj.domaine.QueryFactoryImpl;
-import be.vinci.aj.server.ProxyServer;
+import domaine.QueryFactory;
+import domaine.QueryFactoryImpl;
+import server.ProxyServer;
 
 public class Main {
 

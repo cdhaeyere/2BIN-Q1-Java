@@ -1,4 +1,4 @@
-package be.vinci.aj.domaine;
+package domaine;
 
 public interface Query {
     String getUrl();

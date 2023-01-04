@@ -1,7 +1,8 @@
-package be.vinci.aj.server;
+package server;
 
-import be.vinci.aj.domaine.Query;
-import be.vinci.aj.domaine.QueryFactory;
+import blacklist.BlacklistServiceImpl;
+import domaine.Query;
+import domaine.QueryFactory;
 
 import java.util.Scanner;
 
@@ -16,7 +17,7 @@ public class ProxyServer {
     }
 
     public void startServer() {
-        BlacklistService blacklistService = new BlacklistService();
+        BlacklistServiceImpl blacklistService = new BlacklistServiceImpl();
         while (true) {
             String url = scanner.nextLine();
             Query queryImpl = queryFactory.getQuery();
